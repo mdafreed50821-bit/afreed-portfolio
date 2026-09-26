@@ -17,8 +17,10 @@ npm run preview
 
 ## Before you publish
 
-- Drop a headshot at `public/headshot.jpg`. `PhotoSlot` renders a designed
-  placeholder until it exists, then the image fades in.
+- The headshot is committed at `public/headshot.jpg`, so `PhotoSlot` shows the
+  image rather than its designed placeholder. To swap it, replace the file
+  (keep it 899×1599) or point `headshotSrc` in `src/data/content.ts` at a new
+  file. Tune the circle-crop framing with `headshot.focusY` in the same file.
 - `src/data/content.ts` is the only place biography facts live. It follows one
   rule: nothing is written there that is not on record. Design work must never
   introduce a capability claim, metric, employer, date or award by itself.

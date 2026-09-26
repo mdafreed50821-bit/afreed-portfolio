@@ -7,7 +7,6 @@ dist-ssr
 !.vscode/extensions.json
 *.tsbuildinfo
 
-# Headshot: drop the real photo here as headshot.jpg (or .png / .webp) — see README.md
-/public/headshot.jpg
+# Headshot: the real photo is committed as public/headshot.jpg — see README.md
 /public/headshot.png
 /public/headshot.webp
