@@ -1,0 +1,13 @@
+node_modules
+dist
+dist-ssr
+*.local
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+*.tsbuildinfo
+
+# Headshot: drop the real photo here as headshot.jpg (or .png / .webp) — see README.md
+/public/headshot.jpg
+/public/headshot.png
+/public/headshot.webp

@@ -1,0 +1,331 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* =========================================================================
+   AERO/HUD DESIGN TOKENS
+   Identity: night-flight avionics. Graphite-navy hull, teal "signal" accent,
+   amber caution used only on real signals (active waypoint, alerts, "in progress").
+   ========================================================================= */
+
+@layer base {
+  :root {
+    --hull-950: #05080c;
+    --hull-900: #080c12;
+    --hull-800: #0f1620;
+    --hull-700: #1b2534;
+    --hull-600: #27364a;
+    --signal: #3cc9d6;
+    --signal-dim: #1b7c86;
+    --caution: #f0a93b;
+    --chalk: #e6edf4;
+    --steel: #93a5b8;
+
+    --cut: 16px;
+    --gutter: clamp(1.25rem, 4vw, 3.5rem);
+    color-scheme: dark;
+  }
+
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  html.is-intro-locked,
+  html.is-intro-locked body {
+    overflow: hidden;
+    touch-action: none;
+  }
+
+  body {
+    margin: 0;
+    background-color: var(--hull-950);
+    color: var(--chalk);
+    font-family: 'Barlow', ui-sans-serif, system-ui, sans-serif;
+    font-synthesis-weight: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+
+  /* Tabular numerals everywhere a number can change — stops HUD jitter. */
+  .font-mono,
+  [class*='font-mono'] {
+    font-variant-numeric: tabular-nums;
+    font-feature-settings: 'tnum' 1;
+  }
+
+  ::selection {
+    background: var(--signal);
+    color: #05080c;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--signal);
+    outline-offset: 3px;
+  }
+
+  /* Scrollbar styled as an instrument rail */
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #080c12;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #223040;
+    border: 2px solid #080c12;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--signal-dim);
+  }
+}
+
+@layer components {
+  /* --- Layout primitives ------------------------------------------------ */
+
+  .shell {
+    width: 100%;
+    max-width: 84rem;
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  /* Hairline frame that reads as an instrument bezel rather than a card. */
+  .bezel {
+    position: relative;
+    background:
+      linear-gradient(180deg, rgba(15, 22, 32, 0.86) 0%, rgba(8, 12, 18, 0.78) 100%);
+    border: 1px solid rgba(39, 54, 74, 0.9);
+  }
+
+  /* Cut-corner geometry — the single shape language of the whole site.
+     No rounded SaaS cards anywhere. */
+  .cut {
+    clip-path: polygon(
+      var(--cut) 0,
+      100% 0,
+      100% calc(100% - var(--cut)),
+      calc(100% - var(--cut)) 100%,
+      0 100%,
+      0 var(--cut)
+    );
+  }
+
+  .cut-sm {
+    --cut: 9px;
+    clip-path: polygon(
+      var(--cut) 0,
+      100% 0,
+      100% calc(100% - var(--cut)),
+      calc(100% - var(--cut)) 100%,
+      0 100%,
+      0 var(--cut)
+    );
+  }
+
+  .cut-tr {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 14px 100%, 0 calc(100% - 14px));
+  }
+
+  /* --- Tick rulers & labels (real technical readouts only) -------------- */
+
+  .mono {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+  }
+
+  .legend {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-size: 0.6875rem;
+    line-height: 1;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: #6d8098;
+  }
+
+  .tick-rule {
+    background-image: repeating-linear-gradient(
+      to right,
+      rgba(109, 128, 152, 0.55) 0 1px,
+      transparent 1px 7px
+    );
+  }
+
+  .tick-rule-v {
+    background-image: repeating-linear-gradient(
+      to bottom,
+      rgba(109, 128, 152, 0.5) 0 1px,
+      transparent 1px 7px
+    );
+  }
+
+  /* --- Blueprint grid field -------------------------------------------- */
+
+  .blueprint {
+    background-image:
+      linear-gradient(rgba(39, 54, 74, 0.42) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(39, 54, 74, 0.42) 1px, transparent 1px),
+      linear-gradient(rgba(39, 54, 74, 0.16) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(39, 54, 74, 0.16) 1px, transparent 1px);
+    background-size:
+      96px 96px,
+      96px 96px,
+      16px 16px,
+      16px 16px;
+  }
+
+  /* --- Atmosphere overlays --------------------------------------------- */
+
+  .vignette::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 24;
+    background:
+      radial-gradient(120% 90% at 50% 42%, transparent 42%, rgba(5, 8, 12, 0.72) 100%),
+      linear-gradient(180deg, rgba(5, 8, 12, 0.7) 0%, transparent 18%, transparent 78%, rgba(5, 8, 12, 0.85) 100%);
+  }
+
+  .grain {
+    position: fixed;
+    inset: -50%;
+    z-index: 25;
+    pointer-events: none;
+    opacity: 0.055;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+    will-change: transform;
+    animation: grain-drift 7s steps(6) infinite;
+  }
+
+  @keyframes grain-drift {
+    0% { transform: translate3d(0, 0, 0); }
+    20% { transform: translate3d(-3%, 2%, 0); }
+    40% { transform: translate3d(2%, -3%, 0); }
+    60% { transform: translate3d(-2%, -2%, 0); }
+    80% { transform: translate3d(3%, 1%, 0); }
+    100% { transform: translate3d(0, 0, 0); }
+  }
+
+  .scanlines {
+    position: fixed;
+    inset: 0;
+    z-index: 26;
+    pointer-events: none;
+    opacity: 0.22;
+    background-image: repeating-linear-gradient(
+      180deg,
+      rgba(5, 8, 12, 0.24) 0 1px,
+      transparent 1px 3px
+    );
+  }
+
+  /* --- Link / interactive affordances ----------------------------------- */
+
+  .link-instrument {
+    position: relative;
+    color: var(--chalk);
+    text-decoration: none;
+    transition: color 220ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .link-instrument::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -3px;
+    height: 1px;
+    width: 100%;
+    background: var(--signal);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 380ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .link-instrument:hover {
+    color: var(--signal);
+  }
+  .link-instrument:hover::after {
+    transform: scaleX(1);
+  }
+
+  /* --- Reveal primitives used by the GSAP calibration sequences --------- */
+
+  .calib-mask {
+    clip-path: inset(0 100% 0 0);
+  }
+
+  .calib-blur {
+    filter: blur(7px);
+    opacity: 0;
+  }
+
+  /* --- CSS-only motion for the static instrument poster ----------------- */
+
+  @keyframes poster-flow {
+    to {
+      stroke-dashoffset: -260;
+    }
+  }
+
+  .poster-flow {
+    stroke-dasharray: 44 216;
+  }
+
+  @keyframes poster-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .poster-sweep {
+    animation: poster-spin 6s linear infinite;
+  }
+}
+
+@layer utilities {
+  .text-shadow-hud {
+    text-shadow: 0 0 22px rgba(60, 201, 214, 0.25);
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    scrollbar-width: none;
+  }
+}
+
+/* =========================================================================
+   REDUCED MOTION — everything collapses to its final, static state.
+   The 3D scene is not mounted at all in this mode (see SceneGate).
+   ========================================================================= */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  html.is-intro-locked,
+  html.is-intro-locked body {
+    overflow: auto;
+    touch-action: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+  .calib-mask {
+    clip-path: none !important;
+  }
+  .calib-blur {
+    filter: none !important;
+    opacity: 1 !important;
+  }
+  .grain {
+    animation: none !important;
+  }
+}
