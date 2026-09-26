@@ -1,4 +1,4 @@
-import { Suspense, lazy, useEffect, useMemo, useRef } from 'react'
+import { Suspense, lazy, useCallback, useEffect, useMemo, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { SECTIONS } from './data/sections'
 import { profile } from './data/content'
@@ -28,7 +28,10 @@ export default function App() {
   const setQuality = useHud((s) => s.setQuality)
 
   const root = useRef<HTMLDivElement>(null)
-  useIntroSequence(root, { enabled: true, onComplete: () => undefined })
+  // Stable identity: a fresh callback here would tear down and rebuild the
+  // whole intro timeline on every render, re-locking scroll each time.
+  const onIntroComplete = useCallback(() => undefined, [])
+  useIntroSequence(root, { enabled: true, onComplete: onIntroComplete })
   useScrollProgress()
 
   const quality = useMemo(() => resolveQuality(tier, pref, reduced), [tier, pref, reduced])

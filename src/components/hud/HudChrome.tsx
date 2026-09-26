@@ -127,7 +127,7 @@ export function HudChrome() {
         <p className="mono text-[10px] uppercase leading-relaxed tracking-[0.14em] text-steel-500">
           {profile.location}
           <br />
-          17.3850°N 78.4867°E
+          {profile.degree}
         </p>
       </div>
 
